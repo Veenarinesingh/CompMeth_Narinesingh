@@ -1,0 +1,15 @@
+#Homework 1 problem 3, take in values for x and y and convert them to polar coordinates
+
+import numpy as np
+
+x=float(input('Input x value '))
+y=float(input('Input y value '))
+
+r=round(np.sqrt(x**2+y**2), 2)
+
+theta=(360*np.arctan(y/x))/(2*np.pi)
+
+print('In polar coordinates r =',r,'and angle', chr(952), 'is equal to', theta, 'degrees')
+
+
+#note the chr(952) command to get greek letter theta using UTF Number
