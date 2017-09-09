@@ -1,0 +1,33 @@
+##Homework 1 problem 4.
+
+import fractions as fc
+import numpy as np
+
+vel=input('Insert the traveling velocity as a fraction compared to the speed of light (i.e. 3/5, 4/5, etc) ' )
+
+v=float(fc.Fraction(vel))
+
+
+gamma=round(1/(np.sqrt(1-(v**2))), 3)
+
+print('Your velocity is', float(fc.Fraction(vel)),'c')
+
+print('Your Lorentz/dilation factor is ', gamma)
+
+
+
+
+x=float(input('Now what is distance in light years? '))
+
+trest=round(x/v, 2)
+
+print('For an observer at rest, the traveler will take ', trest, 'years to arrive at their destination')
+
+ttrav=round(trest/gamma, 2)
+
+print('For the traveler however, it will take', ttrav, 'years')
+
+
+
+#when we run through the program inserting the values of .99c for the velocity and 10 light years for the distance, we get
+#10.10 years for the observer at rest, and 1.42 years for the traveler.
