@@ -1,0 +1,50 @@
+#Exercise 3.2 plotting
+
+#part a
+
+import numpy as np
+import pylab as py
+
+angles = np.array([0, np.pi/4, np.pi/2, np.pi*3/4, np.pi, np.pi*5/4, np.pi*3/2, np.pi*7/4, np.pi*2])
+
+x=2*np.cos(angles)+np.cos(2*angles)
+
+y=2*np.sin(angles)-np.sin(2*angles)
+
+py.plot(x,y)
+py.show()
+
+
+
+#Exercise 3.2 plotting
+
+#part b
+
+import numpy as np
+import pylab as py
+
+theta=np.linspace(0,100,1000)
+r=theta**2
+
+x=r*np.cos(theta)
+y=r*np.sin(theta)
+
+py.plot(x,y)
+py.show()
+
+
+#Exercise 3.2 plotting
+
+#part c
+
+import numpy as np
+import pylab as py
+
+theta=np.linspace(0,np.pi*24,10000)
+r=np.exp(np.cos(theta))-2*np.cos(4*theta)+np.sin(theta/12)**5
+
+x=r*np.cos(theta)
+y=r*np.sin(theta)
+
+py.plot(x,y)
+py.show()
