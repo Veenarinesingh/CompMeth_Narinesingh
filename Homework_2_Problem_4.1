@@ -1,0 +1,42 @@
+#Problem 4.1
+
+#define a factorial function that uses an integer variables
+
+def factorial(n):
+    f=int(1.0)
+    for k in range(1,n+1):
+        f *= k 
+    return f 
+
+n=int(input("Input a number to compute the factorial: "))
+print(factorial(n))
+
+
+#the factorial of 200 for example, gives the output
+
+#788657867364790503552363213932185062295135977687173263294742533244359449963
+#403342920304284011984623904177212138919638830257642790242637105061926624952
+#829931113462857270763317237396988943922445621451664240254033291864131227428
+#294853277524242407573903240321257405579568660226031904170324062351700858796
+#178922222789623703897374720000000000000000000000000000000000000000000000000
+
+
+#define a factorial function that uses float variables
+
+def factorial(n):
+    f=float(1.0)
+    for k in range(1,n+1):
+        f *= k 
+    return f 
+
+n=int(input("Input a number to compute the factorial: "))
+print(factorial(n))
+
+
+#in this case the factorial of 200 yields a value of infinity
+
+#the value that this function yields exceeds the maximum float value the computer allows (~10**308). 
+#The integer version of this function yields an answer up to arbitrary precision, because python has no limit on integer precision
+
+
+
