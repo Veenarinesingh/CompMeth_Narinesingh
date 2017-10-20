@@ -1,3 +1,5 @@
+#Exercise 8.7
+
 import numpy as np
 import pylab as py
 
