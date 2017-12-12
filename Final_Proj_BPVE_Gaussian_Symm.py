@@ -28,10 +28,10 @@ from numpy.fft import fft2,ifft2
 
 #Initial Conditions Specifications for a pseudo-real 500 mb flow
 DAYLEN=2           # Forecast length in days.
-NX = 100             # Set spatial resolution
-NY = 100
-DELTA_t = 1/36      # Timestep in hours
-Ubar = 30           # Mean wind going from west to east wind (m/s). (zero by default)
+NX = 66             # Set spatial resolution
+NY = 66
+DELTA_t = 1/96      # Timestep in hours
+Ubar = 50           # Mean wind going from west to east wind (m/s). (zero by default)
 Hbar=5500           # Mean Height (m) for 500 mb surface.
 
 # Part 1. Set constants and domain.
@@ -99,10 +99,13 @@ XM, YM = XX/(10**3), YY/(10**3)
 
 plt.figure()
 CS = plt.contourf(XM, YM, Z_0)
-plt.xlabel('x (kilometers)')
-plt.ylabel('y (kilometers)')
-plt.colorbar(label='Perturbation Height (m)')
-plt.title('500 mbar Geopotential Perturbation')
+plt.xlabel('x (kilometers)',fontsize=24)
+plt.ylabel('y (kilometers)',fontsize=24)
+plt.tick_params(axis='both', which='major', labelsize=24)
+cb=plt.colorbar()
+cb.set_label('Perturbation Height (km)',size=24)
+cb.ax.tick_params(labelsize=24)
+plt.title('500 mbar Geopotential Perturbation',fontsize=24)
 
 # Plot the field including the mean flow
 vecwmin = Ztotal_0.min()
@@ -113,10 +116,13 @@ vecw = linspace(vecwmean-vecwspan,vecwmean+vecwspan,21)
 
 plt.figure()
 plt.contourf(XM, YM, Ztotal_0,vecw)
-plt.xlabel('x (kilometers)')
-plt.ylabel('y (kilometers)')
-plt.colorbar(label='Geopotential Height (m)')
-plt.title('500 mbar Geopotential Height with mean horizontal flow')
+plt.xlabel('x (kilometers)',fontsize=24)
+plt.ylabel('y (kilometers)',fontsize=24)
+plt.tick_params(axis='both', which='major', labelsize=24)
+cb=plt.colorbar()
+cb.set_label('Total Geopotential Height (km)',size=24)
+cb.ax.tick_params(labelsize=24)
+plt.title('500 mbar Geopotential Height',fontsize=24)
 
 #generate initial streamfunction
 w_0=Z_0  #w_0 is perturbation height
@@ -328,18 +334,27 @@ for n in range(1,numberoftimes):
     Q_nm1 = Q_n
     timeestep=n
 
-#Plot the new 500 mb geopotential height contour
+    #Plot the new 500 mb geopotential height contour
     plt.clf()
     plt.contourf(XM, YM, wtotal,vecw)
     plt.colorbar()
     plt.title('500 mb Geopotential Height and Zonal Wind Contours')
 
-#Plot east-west wind strength contours
+    #Plot east-west wind strength contours
     plt.draw()
     CS = plt.contour(XM, YM, -grav*dwdy/fcor0,colors='k')
     plt.clabel(CS, inline=1, fontsize=10)
     plt.pause(.00001)
 
+plt.figure()
+CS = plt.contourf(XM, YM, w_0)
+plt.xlabel('x (kilometers)',fontsize=24)
+plt.ylabel('y (kilometers)',fontsize=24)
+plt.tick_params(axis='both', which='major', labelsize=24)
+cb=plt.colorbar()
+cb.set_label('Perturbation Height (km)',size=24)
+cb.ax.tick_params(labelsize=24)
+plt.title('500 mbar Geopotential Perturbation',fontsize=24)
 
 
 #Plot the average east-west wind strength contour over all time-steps
