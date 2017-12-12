@@ -27,11 +27,11 @@ from mpl_toolkits.mplot3d import Axes3D
 from numpy.fft import fft2,ifft2
 
 #Initial Conditions Specifications for a pseudo-real 500 mb flow
-DAYLEN=2           # Forecast length in days.
+DAYLEN=1           # Forecast length in days.
 NX = 66             # Set spatial resolution
 NY = 66
-DELTA_t = 1/96      # Timestep in hours
-Ubar = 50           # Mean wind going from west to east wind (m/s). (zero by default)
+DELTA_t = 1/12      # Timestep in hours
+Ubar = 30           # Mean wind going from west to east wind (m/s). (zero by default)
 Hbar=5500           # Mean Height (m) for 500 mb surface.
 
 # Part 1. Set constants and domain.
@@ -337,13 +337,18 @@ for n in range(1,numberoftimes):
     #Plot the new 500 mb geopotential height contour
     plt.clf()
     plt.contourf(XM, YM, wtotal,vecw)
-    plt.colorbar()
-    plt.title('500 mb Geopotential Height and Zonal Wind Contours')
+    plt.xlabel('x (kilometers)',fontsize=24)
+    plt.ylabel('y (kilometers)',fontsize=24)
+    plt.tick_params(axis='both', which='major', labelsize=24)
+    cb=plt.colorbar()
+    cb.set_label('Perturbation Height (km)',size=24)
+    cb.ax.tick_params(labelsize=24)
+    plt.title('500 mb Geopotential Height and Zonal Wind Contours',fontsize=24)
 
     #Plot east-west wind strength contours
     plt.draw()
     CS = plt.contour(XM, YM, -grav*dwdy/fcor0,colors='k')
-    plt.clabel(CS, inline=1, fontsize=10)
+    plt.clabel(CS, inline=1, fontsize=24)
     plt.pause(.00001)
 
 plt.figure()
