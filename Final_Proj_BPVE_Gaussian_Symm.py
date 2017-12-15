@@ -27,10 +27,11 @@ from mpl_toolkits.mplot3d import Axes3D
 from numpy.fft import fft2,ifft2
 
 #Initial Conditions Specifications for a pseudo-real 500 mb flow
-DAYLEN=1           # Forecast length in days.
-NX = 66             # Set spatial resolution
-NY = 66
-DELTA_t = 1/12      # Timestep in hours
+daylen=input('How long of a forecast? (integers only please!)')
+DAYLEN=int(daylen)         # Forecast length in days.
+NX = 50             # Set spatial resolution
+NY = 50
+DELTA_t = 1/24      # Timestep in hours
 Ubar = 30           # Mean wind going from west to east wind (m/s). (zero by default)
 Hbar=5500           # Mean Height (m) for 500 mb surface.
 
@@ -55,17 +56,31 @@ print('Grid size, nx=',nx,' ny=',ny);print('Timesteps per day',nspd)
 Rearth = 6.371*10**6 #Radius of the Earth (meters).
 Omega = 2*pi/(24*60*60) # Angular velocity of the Earth
 phi0=45*(pi/180)        # Latitude the calculation is centered on
-fcor0 = 2*Omega*sin(phi0) #Coiolis parameter
 beta0 = 2*Omega*cos(phi0)/Rearth #Beta parameter
+fcor0 = 2*Omega*sin(phi0) #Coiolis parameter
 
 # Calculate the Rossby Radius of Deformation.
 grav = 9.81 #gravitational acceleration in ms^-2
 L_R = sqrt(grav*Hbar)/fcor0  #Rossby Radius
 F = 1/(L_R**2)
 
+#Beta Plane Approximation
+fcor0 = 2*Omega*sin(phi0) #Coiolis parameter
+y=linspace(111000*-15,111000*15,51)
+dfdy45=cos(45*pi/180)*2*Omega/Rearth
+fbeta=2*Omega*sin(45*pi/180)+y*dfdy45
+fbeta=fbeta[::-1]
+
+fcor0=zeros((nx+1,ny+1))
+
+for i in range(0,51):
+    fcor0[i,:]=fbeta[i]
+
+
+
 # Specify the domain size and length scale
-xlen = Rearth # East-West Length of the Domain.
-ylen = Rearth           # North-South Length of the Domain.
+xlen = 3.33*10**6 # East-West Length of the Domain.
+ylen = 3.33*10**6           # North-South Length of the Domain.
 Delta_x = xlen/(nx)        # Horizontal grid length
 Delta_y = ylen/(ny)        #  Vertical grid length
 D_ratio = Delta_y/Delta_x #  Grid length ratio
@@ -76,14 +91,21 @@ y = linspace(0,ny,ny+1)*Delta_y
 (XMESH, YMESH) = meshgrid(x,y);
 XX = transpose(XMESH); YY= transpose(YMESH)
 
+
+
 # Section 2. Define the Initial Fields.
 # The dependent variable is w, the streamfunction. w_0 is the Initial condition.
 # w does NOT include the part due to the mean zonal flow.  w is periodic in x and
 #symmetric in y. The initial condition takes the form of a negative Gaussian
 #depression starting in the middle left side of the fluid
 
+
+width=.01
+xoffset=.5
+yoffset=.5
+
 Z_0 = zeros((nx+1,ny+1));
-term = -350*exp(((-(XX/xlen-.2)**2-(YY/ylen-.5)**2))/.05)
+term = -150*exp(((-(XX/xlen-xoffset)**2-(YY/ylen-yoffset)**2))/width)
 Z_0 = Z_0 + term
 Z_0[0:nx+1,ny]=Z_0[0:nx+1,ny-1]
 Z_0[0:nx+1,0]=Z_0[0:nx+1,1]
@@ -149,7 +171,7 @@ fig.colorbar(surf, shrink=0.5, aspect=5)
 plt.title('Initial Stream Function');
 plt.show(block=False)
 plt.pause(.000001)
-input('Press return to continue')
+
 
 # Section 3. Integrate the BPV Equation in time
 #Integrate the BVE in time by leapfrog method. Leapfrog is used to preserve
@@ -191,8 +213,9 @@ CFL_nonlin=[]
 R=zeros((nx,ny))
 wcenter=[]
 zonalwind=[]
-plt.figure()
 
+
+plt.figure()
 for n in range(1,numberoftimes):
 
 #Take derivatives using finite-difference method, set periodic boundary
@@ -351,6 +374,25 @@ for n in range(1,numberoftimes):
     plt.clabel(CS, inline=1, fontsize=24)
     plt.pause(.00001)
 
+#Plot final height of 500 Millibar pressure level
+plt.figure()
+plt.contourf(XM, YM, wtotal,vecw)
+plt.xlabel('x (kilometers)',fontsize=24)
+plt.ylabel('y (kilometers)',fontsize=24)
+plt.tick_params(axis='both', which='major', labelsize=24)
+cb=plt.colorbar()
+cb.set_label('Perturbation Height (km)',size=24)
+cb.ax.tick_params(labelsize=24)
+plt.title('500 mb Geopotential Height and Zonal Wind Contours after day %s'%(daylen),fontsize=24)
+
+
+#Plot east-west wind strength contours
+plt.draw()
+CS = plt.contour(XM, YM, -grav*dwdy/fcor0,colors='k')
+plt.clabel(CS, inline=1, fontsize=24)
+
+
+#Plot the final geopotential anomoly
 plt.figure()
 CS = plt.contourf(XM, YM, w_0)
 plt.xlabel('x (kilometers)',fontsize=24)
@@ -359,14 +401,24 @@ plt.tick_params(axis='both', which='major', labelsize=24)
 cb=plt.colorbar()
 cb.set_label('Perturbation Height (km)',size=24)
 cb.ax.tick_params(labelsize=24)
-plt.title('500 mbar Geopotential Perturbation',fontsize=24)
+plt.title('500 mbar Geopotential Perturbation after day %s'%(daylen),fontsize=24)
 
+#Plot the final vorticity
+plt.figure()
+plt.contourf(XM, YM, laplac)
+plt.xlabel('x (kilometers)',fontsize=24)
+plt.ylabel('y (kilometers)',fontsize=24)
+plt.tick_params(axis='both', which='major', labelsize=24)
+cb=plt.colorbar()
+cb.set_label('Vorticity Anomoly (1/s)',size=24)
+cb.ax.tick_params(labelsize=24)
+plt.title('500 mb Vorticity Anomoly after day %s'%(daylen),fontsize=24)
 
 #Plot the average east-west wind strength contour over all time-steps
-plt.show()
+plt.figure()
 zonalwindacrosstime = asarray(zonalwind,dtype=float32)
 zonalwindavg=mean(zonalwindacrosstime,axis=0)
-plt.figure();
 ZW=plt.contour(XM,YM,zonalwindavg+Ubar)
 plt.clabel(ZW, inline=1, fontsize=10)
+plt.title('500 mb zonal wind average after day %s'%(daylen),fontsize=24)
 plt.show()
