@@ -232,81 +232,86 @@ plt.figure()
 for n in range(1,numberoftimes):
 
 #Take derivatives using finite-difference method, set periodic boundary
-#conditions in x and y
+#conditions in x and symmetric in y.
 
-#x derivative
-
-    dwdx[1:nx,0:ny+2]= (w[2:nx+1,0:ny+1]-w[0:nx-1,0:ny+1])/(2*Delta_x);
-    dwdx[0,0:ny+1] = (w[1,0:ny+1]-w[nx-1,0:ny+1])/(2*Delta_x);
-    dwdx[nx,0:ny+1] = dwdx[0,0:ny+1];
-
-# y-derivative of w
-    dwdy[0:nx+1,1:ny] = (w[0:nx+1,2:ny+1]-w[0:nx+1,0:ny-1])/(2*Delta_y);
-
-    dwdy[0:nx+1,0] = (w[0:nx+1,1]-w[0:nx+1,ny-1])/(2*Delta_y);
-    dwdy[0:nx+1,ny] = dwdy[0:nx+1,0];
-
-
-# Square of the gradient of w
+#x derivative of w
+    dwdx[1:nx,0:ny+2]= (w[2:nx+1,0:ny+2]-w[0:nx-1,0:ny+2])/(2*Delta_x)
+    dwdx[0,0:ny+2] = (w[1,0:ny+2]-w[nx-1,0:ny+2])/(2*Delta_x)
+    dwdx[nx,0:ny+2] = dwdx[0,0:ny+2]
+    dwdx[0:nx+1,ny]=dwdx[0:nx+1,ny-1]
+    dwdx[0:nx+1,0]=dwdx[0:nx+1,1]
+#y-derivative of w
+    dwdy[0:nx+2,2:ny-1] = (w[0:nx+2,3:ny]-w[0:nx+2,1:ny-2])/(2*Delta_y);
+    dwdy[0:nx+2,1]= (w[0:nx+2,2]-w[0:nx+2,1])/Delta_y
+    dwdy[0:nx+2,ny-1]=(w[0:nx+2,ny-1]-w[0:nx+2,ny-2])/Delta_y
+    dwdy[0:nx+2,0] =  dwdy[0:nx+2,1]
+    dwdy[0:nx+2,ny] = dwdy[0:nx+2,ny-1];
+#Square of the gradient of w
     gradsq = dwdx**2+dwdy**2;
-
-# Second x-derivative of w
-    d2wdx2[1:nx,0:ny+1] = (w[2:nx+1,0:ny+1]+w[0:nx-1,0:ny+1]-2*w[1:nx,0:ny+1])/(Delta_x**2)
-    d2wdx2[0,0:ny+1] = (w[1,0:ny+1]+w[nx-1,0:ny+1]-2*w[0,0:ny+1])/(Delta_x**2)
-    d2wdx2[nx,0:ny+1] = d2wdx2[0,0:ny+1]
-
-# Second y-derivative of w
-    d2wdy2[0:nx+1,1:ny] = (w[0:nx+1,2:ny+1]+w[0:nx+1,0:ny-1]-2*w[0:nx+1,1:ny])/(Delta_y**2)
-    d2wdy2[0:nx+1,0] = (w[0:nx+1,1]+w[0:nx+1,ny-1]-2*w[0:nx+1,0])/(Delta_y**2)
-    d2wdy2[0:nx+1,ny] = d2wdy2[0:nx+1,0]
-
+#Second x-derivative of w
+    d2wdx2[1:nx,0:ny+2] = (w[2:nx+1,0:ny+2]+w[0:nx-1,0:ny+2]-2*w[1:nx,0:ny+2])/(Delta_x**2)
+    d2wdx2[0,0:ny+2] = (w[1,0:ny+2]+w[nx-1,0:ny+2]-2*w[0,0:ny+2])/(Delta_x**2)
+    d2wdx2[nx,0:ny+2] = d2wdx2[0,0:ny+2]
+    d2wdx2[0:nx+1,ny]=d2wdx2[0:nx+1,ny-1]
+    d2wdx2[0:nx+1,0]=d2wdx2[0:nx+1,1]
+#Second y-derivative of w
+    d2wdy2[0:nx+2,2:ny-1] = (w[0:nx+2,3:ny]+w[0:nx+2,1:ny-2]-2*w[0:nx+2,2:ny-1])/(Delta_y**2)
+    d2wdy2[0:nx+2,1]=(w[0:nx+2,3]+w[0:nx+2,1]-2*w[0:nx+2,2])/(Delta_y**2)
+    d2wdy2[0:nx+2,0] = d2wdy2[0:nx+2,1]
+    d2wdy2[0:nx+2,ny-1]=(w[0:nx+2,ny-3]+w[0:nx+2,ny-1]-2*w[0:nx+2,ny-2])/(Delta_y**2)
+    d2wdy2[0:nx+2,ny] = d2wdy2[0:nx+2,ny-1]
     laplac = d2wdx2+d2wdy2;
-
-# x-derivative of laplacian
-    dlapdx[1:nx,0:ny+1] = (laplac[2:nx+1,0:ny+1]-laplac[0:nx-1,0:ny+1])/(2*Delta_x)
-    dlapdx[0,0:ny+1] = (laplac[1,0:ny+1]-laplac[nx-1,0:ny+1])/(2*Delta_x)
-    dlapdx[nx,0:ny+1] = dlapdx[0,0:ny+1]
-
-
+#x-derivative of laplacian
+    dlapdx[1:nx,0:ny+2] = (laplac[2:nx+1,0:ny+2]-laplac[0:nx-1,0:ny+2])/(2*Delta_x)
+    dlapdx[0,0:ny+2] = (laplac[1,0:ny+2]-laplac[nx-1,0:ny+2])/(2*Delta_x)
+    dlapdx[nx,0:ny+2] = dlapdx[0,0:ny+2]
+    dlapdx[0:nx+1,ny]=dlapdx[0:nx+1,ny-1]
+    dlapdx[0:nx+1,0]=dlapdx[0:nx+1,1]
 #y-derivative of laplacian
-    dlapdy[0:nx+1,1:ny] = (laplac[0:nx+1,2:ny+1]-laplac[0:nx+1,0:ny-1])/(2*Delta_y)
-    dlapdy[0:nx+1,0] = (laplac[0:nx+1,1]-laplac[0:nx+1,ny-1])/(2*Delta_y)
-    dlapdy[0:nx+1,ny] = dlapdy[0:nx+1,0]
-
+    dlapdy[0:nx+2,2:ny-1] = (laplac[0:nx+2,3:ny]-laplac[0:nx+2,1:ny-2])/(2*Delta_y)
+    dlapdy[0:nx+2,1]= (laplac[0:nx+2,2]-laplac[0:nx+2,1])/Delta_y
+    dlapdy[0:nx+2,ny-1]=(laplac[0:nx+2,ny-1]-laplac[0:nx+2,ny-2])/Delta_y
+    dlapdy[0:nx+2,0] =  dlapdy[0:nx+2,1]
+    dlapdy[0:nx+2,ny] = dlapdy[0:nx+2,ny-1];
     Jacobi = dwdx*dlapdy - dwdy*dlapdx
-
 #Compute the Arakawa Jacobian.
-
     Jac1 = Jacobi;
-
     wdldx = w*dlapdx
     wdldy = w*dlapdy
 
-    dwdldydx[1:nx,0:ny+1] = (wdldy[2:nx+1,0:ny+1]-wdldy[0:nx-1,0:ny+1])/(2*Delta_x);
-    dwdldydx[0,0:ny+1] = (wdldy[1,0:ny+1]-wdldy[nx-1,0:ny+1])/(2*Delta_x);
-    dwdldydx[nx,0:ny+1] = dwdldydx[0,0:ny+1];
+    dwdldydx[1:nx,0:ny+2] = (wdldy[2:nx+1,0:ny+2]-wdldy[0:nx-1,0:ny+2])/(2*Delta_x);
+    dwdldydx[0,0:ny+2] = (wdldy[1,0:ny+2]-wdldy[nx-1,0:ny+2])/(2*Delta_x);
+    dwdldydx[nx,0:ny+2] = dwdldydx[0,0:ny+2];
+    dwdldydx[0:nx+1,ny]=dwdldydx[0:nx+1,ny-1]
+    dwdldydx[0:nx+1,0]=dwdldydx[0:nx+1,1]
 
-
-    dwdldxdy[0:nx+1,1:ny] = (wdldx[0:nx+1,2:ny+1]-wdldx[0:nx+1,0:ny-1])/(2*Delta_y)
-    dwdldxdy[0:nx+1,0] = (wdldx[0:nx+1,1]-wdldx[0:nx+1,ny-1])/(2*Delta_y)
-    dwdldxdy[0:nx+1,ny] = dwdldxdy[0:nx+1,0]
+    dwdldxdy[0:nx+2,2:ny-1] = (wdldx[0:nx+2,3:ny]-wdldx[0:nx+2,1:ny-2])/(2*Delta_y)
+    dwdldxdy[0:nx+2,1]= (wdldx[0:nx+2,2]-wdldx[0:nx+2,1])/Delta_y
+    dwdldxdy[0:nx+2,ny-1]=(wdldx[0:nx+2,ny-1]-wdldx[0:nx+2,ny-2])/Delta_y
+    dwdldxdy[0:nx+2,0] =  dwdldxdy[0:nx+2,1]
+    dwdldxdy[0:nx+2,ny] = dwdldxdy[0:nx+2,ny-1];
 
     Jac2 = dwdldydx - dwdldxdy
-
     dwdxl = dwdx*laplac
     dwdyl = dwdy*laplac
 
-    ddwdxldy[0:nx+1,1:ny] = (dwdxl[0:nx+1,2:ny+1]-dwdxl[0:nx+1,0:ny-1])/(2*Delta_y)
-    ddwdxldy[0:nx+1,0] = (dwdxl[0:nx+1,1]-dwdxl[0:nx+1,ny-1])/(2*Delta_y)
-    ddwdxldy[0:nx+1,ny] = ddwdxldy[0:nx+1,0]
+    ddwdxldy[0:nx+2,2:ny-1] = (dwdxl[0:nx+2,3:ny]-dwdxl[0:nx+2,1:ny-2])/(2*Delta_y)
+    ddwdxldy[0:nx+2,1]= (dwdxl[0:nx+2,2]-dwdxl[0:nx+2,1])/Delta_y
+    ddwdxldy[0:nx+2,ny-1]=(dwdxl[0:nx+2,ny-1]-dwdxl[0:nx+2,ny-2])/Delta_y
+    ddwdxldy[0:nx+2,0] =  ddwdxldy[0:nx+2,1]
+    ddwdxldy[0:nx+2,ny] = ddwdxldy[0:nx+2,ny-1];
 
-    ddwdyldx[1:nx,0:ny+1] = (dwdyl[2:nx+1,0:ny+1]-dwdyl[0:nx-1,0:ny+1])/(2*Delta_x);
-    ddwdyldx[0,0:ny+1] = (dwdyl[1,0:ny+1]-dwdyl[nx-1,0:ny+1])/(2*Delta_x)
-    ddwdyldx[nx,0:ny+1] = ddwdyldx[0,0:ny+1]
+    ddwdyldx[1:nx,0:ny+2] = (dwdyl[2:nx+1,0:ny+2]-dwdyl[0:nx-1,0:ny+2])/(2*Delta_x);
+    ddwdyldx[0,0:ny+2] = (dwdyl[1,0:ny+2]-dwdyl[nx-1,0:ny+2])/(2*Delta_x)
+    ddwdyldx[nx,0:ny+2] = ddwdyldx[0,0:ny+2]
+    ddwdyldx[0:nx+1,ny]=ddwdyldx[0:nx+1,ny-1]
+    ddwdyldx[0:nx+1,0]=ddwdyldx[0:nx+1,1]
 
     Jac3 = ddwdxldy - ddwdyldx
-
     Jarakawa = (1/3)*(Jac1+Jac2+Jac3)
+#Use the energy and enstrophy preserving Jacobian.
+    Jacobi = Jarakawa;
+
 
 #Compute the function to be stepped forward. The -F*w turn is to dampen out
 #small but quickly divergent modes
